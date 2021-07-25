@@ -28,24 +28,28 @@ def infer(basis, stimuli, eta, lamb, nIter, adapt, coeffs=None, softThresh=0):
                                                                                                                             
         Raises:
         """
-    numDict = basis.shape[0]
-    numStim = stimuli.shape[0]
-    dataSize = basis.shape[1]
+    numDict = basis.shape[0] # number of elements in dictionary
+    numStim = stimuli.shape[0] # number of stimuli
+    dataSize = basis.shape[1] # size of a dictionary element
+
     #Initialize u and s
     u = np.zeros((numStim, numDict))
+    # Don't understand what this does yet
     if coeffs is not None:
         u[:] = np.atleast_2d(coeffs)
     s = np.zeros_like(u)
     ci = np.zeros((numStim, numDict))
 
     # Calculate c: overlap of basis functions with each other minus identity
+    # Row-wise correlation matrix - identity matrix to eliminate self correlation
     c = basis.dot(basis.T) - np.eye(numDict)
 
     #b[i,j] is the overlap fromstimuli:i and basis:j
     b = stimuli.dot(basis.T)
     thresh = np.absolute(b).mean(1)
+
     #Update u[i] and s[i] for nIter time steps
-    for kk in xrange(nIter):
+    for kk in range(nIter):
         #Calculate ci: amount other neurons are stimulated times overlap with rest of basis
         ci[:] = s.dot(c)
         u[:] = eta*(b-ci)+(1-eta)*u
