@@ -47,9 +47,7 @@ def infer(basis, stimuli, eta, lamb, nIter, adapt, coeffs=None, softThresh=0):
     #b[i,j] is the overlap from stimuli:i and basis:j
     b = stimuli.dot(basis.T)
 
-    # todo ?
     thresh = np.absolute(b).mean(1)
-    print(thresh)
 
     #Update u[i] and a[i] for nIter time steps
     for kk in range(nIter):
@@ -67,17 +65,11 @@ def infer(basis, stimuli, eta, lamb, nIter, adapt, coeffs=None, softThresh=0):
             # Compares every element of a row of 'a' with the element of the same row in 'thresh'.
             # Hard threshold
             a[np.absolute(a) < thresh[:,np.newaxis]] = 0.
-        # Multiply threshold values bigger than 'lamb' with 'adapt'
+
+        # Multiply threshold values bigger than 'lamb' with 'adapt' to change thresh per run
         thresh[thresh>lamb] = adapt*thresh[thresh>lamb]
 
-        # Sof thresholding - asude
+        # Soft thresholding - asude
         # a[:] = np.sign(u) * np.maximum(0., np.absolute(u) - lamb)
 
-
-
-    print(thresh)
-    # print(np.shape(a))
-    # print(np.shape(thresh[:,np.newaxis]))
-    # print(a[np.absolute(a) < thresh[:,np.newaxis]])
-    # print(thresh[:,np.newaxis])
-    return (a,u,thresh)
+    return (a,u)

@@ -82,18 +82,18 @@ class test_infer():
     #     assert np.allclose(stimuli,s.dot(dictionary),atol=1e-5)
 
     def test_numpy(self):
-        # coeffs = np.zeros(shape=(self.num,self.num))
+        coeffs = np.zeros(shape=(self.num,self.num))
         #Test for correct outputs for simple data
         dictionary = np.diag(np.ones(self.num)) # dictionary is a diagonal matrix of ones with size num (64).
         stimuli = np.diag(np.ones(self.num)) # stimuli is a diagonal matrix of ones with size num (64).
-        s,u,thresh = lcan.infer(dictionary,
+        a,u = lcan.infer(dictionary,
                                 stimuli,
                                 self.eta,
                                 self.lamb,
                                 self.nIter,
                                 self.adapt)
-        # Test condition - whether s and u are computed correctly by LCA
-        assert np.allclose(s,np.diag(np.ones(self.num)))
+        # Test condition - whether a and u are computed correctly by LCA
+        assert np.allclose(a,np.diag(np.ones(self.num)))
         assert np.allclose(u,np.diag(np.ones(self.num)))
 
         #Test on random data
@@ -101,13 +101,16 @@ class test_infer():
         dictionary = np.sqrt(np.diag(1/np.diag(dictionary.dot(dictionary.T)))).dot(dictionary)
         stimuli = self.rng.randn(self.numStim,self.dataSize)
         # coeffs = np.zeros(shape=(self.numStim,self.numDict))
-        s,u,thresh = lcan.infer(dictionary,
+        a,_ = lcan.infer(dictionary,
                                 stimuli,
                                 self.eta,
                                 self.lamb,
                                 self.nIter,
                                 self.adapt)
-        assert np.allclose(stimuli,s.dot(dictionary),atol=1e-5)
+        stimuli_rec = a.dot(dictionary)
+        assert np.allclose(stimuli,stimuli_rec,atol=1e-5)
+
+
 
     # def test_momentum(self):
     #     coeffs = np.zeros(shape=(self.num,self.num))
